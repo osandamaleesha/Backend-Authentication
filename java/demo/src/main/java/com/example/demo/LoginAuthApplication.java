@@ -40,8 +40,8 @@ public class LoginAuthApplication {
 //
 //     User user=new User();
 //
-//     user.setUserName("Ushan");
-//     user.setFirstName("Ushan");
+//     user.setUserName("Ushan1");
+//     user.setFirstName("Ushan1");
 //     user.setLastName("Gallage");
 //
 //     user.setPassword(passwordEncoder.encode("123"));
