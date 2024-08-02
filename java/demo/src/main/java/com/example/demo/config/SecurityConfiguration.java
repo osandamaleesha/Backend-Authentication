@@ -66,7 +66,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(authenticationEntryPoint).and()
                 .authorizeRequests((request) -> request.antMatchers(
                                 "/api/v1/auth/login",
-                                "/api/v1/vws-home"
+                                "/api/v1/login_dashboard"
+
 
                         )
                         .permitAll()
