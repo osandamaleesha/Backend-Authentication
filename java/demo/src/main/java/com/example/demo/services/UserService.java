@@ -11,7 +11,7 @@ import com.example.demo.repository.UserDetailsRepository;
 
 //first call service after repo
 @Service
-public class CustomUserService implements UserDetailsService {
+public class UserService implements UserDetailsService {
     //link userRepository with UserDetailsService interface
     @Autowired
     UserDetailsRepository userDetailsRepository;
@@ -19,12 +19,12 @@ public class CustomUserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        User user=userDetailsRepository.findByUserName(username);
+        User user = userDetailsRepository.findByUserName(username);
 
-        if(null==user) {
-            throw new UsernameNotFoundException("User Not Found with userName "+username);
+        if (null == user) {
+            throw new UsernameNotFoundException("User Not Found with userName " + username);
         }
         return user;
     }
-
 }
+

@@ -1,69 +1,11 @@
-//package com.example.demo.controllers;
-//import com.example.demo.entities.User;
-//import com.example.demo.repository.UserDetailsRepository;
-//import com.example.demo.services.CustomUserService;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.core.userdetails.UserDetailsService;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.util.List;
-//import java.util.Optional;
-//
-//
-//@RestController
-//@RequestMapping("/api/v1")
-//@CrossOrigin(origins = "http://localhost:3000")
-//public class UserController {
-//
-//    @Autowired
-//    private UserDetailsRepository userDetailsRepository;
-//
-//    @Autowired
-//    private CustomUserService customUserService;
-//
-//    @GetMapping("/test")
-//    public String test() {
-//        return "test!";
-//    }
-//
-//    @GetMapping("/users")
-//    public List<User> getAllUsers() {
-//        return userDetailsRepository.findAll();
-//    }
-//
-////    @GetMapping("/users/{id}")
-////    public Optional<User> getUserById(@PathVariable Long id) {
-////        System.out.println("id :" + id);
-////        return userDetailsRepository.findById(id);
-////    }
-////    @GetMapping("/users/{id}")
-////    public Optional<User> getUserById(@PathVariable Long id) {
-////        System.out.println("Fetching user with id: " + id);
-////        Optional<User> user = userDetailsRepository.findById(id);
-////        System.out.println("User fetched: " + user);
-////        return user;
-////    }
-//    @GetMapping("/user")
-//    public Optional<User> getUserById(@PathVariable Long id) {
-//        System.out.println("Fetching user with id: " + id);
-//        Optional<User> user = userDetailsRepository.findById(id);
-//        System.out.println("User fetched: " + user);
-//        return user;
-//    }
-//
-//
-//}
-////    @PostMapping("/get_users")
-////    public Optional<User> getUser(@RequestBody Long id){
-////        return userDetailsRepository.findById(id);
-////    }
-//
 
 package com.example.demo.controllers;
 
 import com.example.demo.entities.User;
 import com.example.demo.repository.UserDetailsRepository;
+import com.example.demo.responses.UserFoundResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -90,17 +32,17 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public Optional<User> getUserByIdPathVariable(@PathVariable Long id) {
+    public ResponseEntity<UserFoundResponse> getUserByIdPathVariable(@PathVariable Long id) {
         System.out.println("Fetching user with id: " + id);
         Optional<User> user = userDetailsRepository.findById(id);
         if (user.isPresent()) {
-            System.out.println("User found: " + user.get());
+            UserFoundResponse userFoundResponse = new UserFoundResponse("User found", List.of(user.get()));
+            return ResponseEntity.ok(userFoundResponse);
         } else {
-            System.out.println("User not found with id: " + id);
+            UserFoundResponse userNotFoundResponse = new UserFoundResponse("User not found", List.of());
+            return ResponseEntity.status(404).body(userNotFoundResponse);
         }
-        return user;
     }
-
 
     @GetMapping("/user")
     public Optional<User> getUserByIdQueryParam(@RequestParam Long id) {
@@ -113,6 +55,25 @@ public class UserController {
         }
         return user;
     }
+
+    @PostMapping("/addUsers")
+    public ResponseEntity<UserFoundResponse> addUser(@RequestBody User newUser) {
+        User savedUser = userDetailsRepository.save(newUser);
+        UserFoundResponse userFoundResponse = new UserFoundResponse("User added successfully", List.of(savedUser));
+        return ResponseEntity.status(201).body(userFoundResponse);
+    }
+
+    @DeleteMapping("/deleteUser/{id}")
+    public ResponseEntity<UserFoundResponse> deleteUser(@PathVariable Long id) {
+
+        Optional<User> user = userDetailsRepository.findById(id);
+        if (user.isPresent()) {
+            userDetailsRepository.deleteById(id);
+            UserFoundResponse userDeletedResponse = new UserFoundResponse("User deleted successfully", List.of(user.get()));
+            return ResponseEntity.ok(userDeletedResponse);
+        } else {
+            UserFoundResponse userNotFoundResponse = new UserFoundResponse("User not found", List.of());
+            return ResponseEntity.status(404).body(userNotFoundResponse);
+        }
+    }
 }
-
-
