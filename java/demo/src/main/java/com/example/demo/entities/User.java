@@ -3,10 +3,9 @@ package com.example.demo.entities;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
+import java.util.UUID;
 
 import javax.persistence.*;
-
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,47 +13,49 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Entity
 @Table(name = "AUTH_USER_DETAILS")
 @Inheritance(strategy = InheritanceType.JOINED)
-
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.AUTO) // Use AUTO for UUID generation
+    @Column(name = "ID", updatable = false, nullable = false)
+    private UUID id;
 
-    //@Column(nullable=false)
-    @Column(name = "USER_NAME", unique = true)
+    @Column(name = "USER_NAME", unique = true, nullable = false)
     private String userName;
 
-    @Column(name = "USER_KEY")
+    @Column(name = "USER_KEY", nullable = false)
     private String password;
 
-
-    @Column(name = "CREATED_ON")
-    private Date createdAt;
+    @Column(name = "CREATED_ON", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt = new Date();
 
     @Column(name = "UPDATED_ON")
-    private Date updatedAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt = new Date();
 
-    @Column(name = "first_name")
+    @Column(name = "FIRST_NAME")
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "LAST_NAME")
     private String lastName;
 
-    @Column(name = "email")
+    @Column(name = "EMAIL", unique = true)
     private String email;
 
-    @Column(name = "phone_number")
+    @Column(name = "PHONE_NUMBER")
     private String phoneNumber;
 
-    @Column(name = "enabled")
-    private boolean enabled=true;
+    @Column(name = "ENABLED")
+    private boolean enabled = true;
 
-
-    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @JoinTable(name = "AUTH_USER_AUTHORITY", joinColumns = @JoinColumn(referencedColumnName = "id"),inverseJoinColumns = @JoinColumn(referencedColumnName ="id"))
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "AUTH_USER_AUTHORITY",
+            joinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID"),
+            inverseJoinColumns = @JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID"))
     private List<Authority> authorities;
 
+    // Implementations of UserDetails methods
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
@@ -90,11 +91,12 @@ public class User implements UserDetails {
         return this.enabled;
     }
 
-    public long getId() {
+    // Getters and setters
+    public UUID getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -165,7 +167,4 @@ public class User implements UserDetails {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-
-
-
 }
