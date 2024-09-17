@@ -1,15 +1,16 @@
 package com.example.demo.entities;
 
-
-
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "STUDENT_DETAILS")
 public class Student extends User {
+
+    @Id
+    @GeneratedValue
+    @Column(name = "ID", updatable = false, nullable = false)
+    private UUID id;
 
     @Column(name = "GRADE")
     private String grade;
@@ -18,6 +19,13 @@ public class Student extends User {
     private String major;
 
     // Getters and setters...
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
     public String getGrade() {
         return grade;
