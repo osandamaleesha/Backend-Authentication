@@ -1,30 +1,23 @@
 package com.example.demo.services;
-//UserDetailsService
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 
-import com.example.demo.entities.User;
-import com.example.demo.repository.UserDetailsRepository;
+import com.example.demo.dto.AuthenticationDTO;
+import com.example.demo.dto.UserDTO;
+import com.example.demo.exeption.OctopusDAOException;
+import org.springframework.cache.annotation.CacheEvict;
 
-//first call service after repo
-@Service
-public class UserService implements UserDetailsService {
-    //link userRepository with UserDetailsService interface
-    @Autowired
-    UserDetailsRepository userDetailsRepository;
+import java.util.Optional;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+public interface UserService {
 
-        User user = userDetailsRepository.findByUserName(username);
 
-        if (null == user) {
-            throw new UsernameNotFoundException("User Not Found with userName " + username);
-        }
-        return user;
-    }
+    @CacheEvict(value = "users", allEntries = true) // Clear cache on save
+    void saveUser(UserDTO userDTO) throws OctopusDAOException;
+
+    @CacheEvict(value = "users", allEntries = true) // Clear cache on save
+    void saveUser(UserDTO userDTO, AuthenticationDTO authDTO) throws OctopusDAOException;
+
+    Optional<UserDTO> getUserById(Long id);
+    boolean isEmailAlreadyUsed(String email);
+
+    Object loadUserByUsername(String name);
 }
-
