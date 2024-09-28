@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
 import javax.persistence.*;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -16,23 +15,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO) // Use AUTO for UUID generation
     @Column(name = "ID", updatable = false, nullable = false)
     private UUID id;
 
     @Column(name = "USER_NAME", unique = true, nullable = false)
     private String userName;
 
-    @Column(name = "USER_KEY", nullable = false)
+    @Column(name = "USER_KEY")
     private String password;
 
     @Column(name = "CREATED_ON", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt = new Date();
+    private Date createdAt;
 
     @Column(name = "UPDATED_ON")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt = new Date();
+    private Date updatedAt;
 
     @Column(name = "FIRST_NAME")
     private String firstName;
@@ -55,10 +53,22 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID"))
     private List<Authority> authorities;
 
+    @PrePersist
+    protected void onCreate() {
+        this.id = UUID.randomUUID();
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
+    }
+
     // Implementations of UserDetails methods
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return this.authorities;
     }
 
     @Override
@@ -91,17 +101,9 @@ public class User implements UserDetails {
         return this.enabled;
     }
 
-    // Getters and setters
+    // Getters and Setters
     public UUID getId() {
         return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getUserName() {
-        return userName;
     }
 
     public void setUserName(String userName) {
@@ -112,16 +114,8 @@ public class User implements UserDetails {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public Date getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public String getFirstName() {
@@ -160,11 +154,14 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public void setAuthorities(List<Authority> authorities) {
-        this.authorities = authorities;
-    }
-
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getUserName() {
+        return this.userName;
+    }
+
+    public void setAuthorities(List<Authority> authorityList) {
     }
 }

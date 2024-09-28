@@ -1,28 +1,26 @@
 package com.example.demo.controllers;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
-import java.security.spec.InvalidKeySpecException;
-
+import com.example.demo.config.JWTTokenHelper;
+import com.example.demo.dto.AuthenticationDTO;
+import com.example.demo.dto.LoginDTO;
+import com.example.demo.dto.UserDTO;
+import com.example.demo.entities.Authority;
+import com.example.demo.entities.User;
+import com.example.demo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.config.JWTTokenHelper;
-import com.example.demo.entities.User;
-import com.example.demo.requests.AuthenticationRequest;
-import com.example.demo.responses.LoginResponse;
-import com.example.demo.responses.UserInfo;
+import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -33,40 +31,55 @@ public class AuthenticationController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    JWTTokenHelper jWTTokenHelper;
+    private UserService userService;
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private JWTTokenHelper jwtTokenHelper;
+
+    ;
 
     @PostMapping("/auth/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) throws InvalidKeySpecException, NoSuchAlgorithmException {
+    public ResponseEntity<?> login(@RequestBody AuthenticationDTO authenticationRequest) throws InvalidKeySpecException, NoSuchAlgorithmException {
 
-        final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                authenticationRequest.getUserName(), authenticationRequest.getPassword()));
+        // Authenticate user
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        authenticationRequest.getUserName(),
+                        authenticationRequest.getPassword()
+                )
+        );
 
+        // Set authentication in security context
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        User user=(User)authentication.getPrincipal();
-        String jwtToken=jWTTokenHelper.generateToken(user.getUsername());
+        // Generate JWT token
+        User user = (User) authentication.getPrincipal();
+        String jwtToken = jwtTokenHelper.generateToken(user.getUsername());
 
-        LoginResponse response=new LoginResponse();
+        // Create and return the response
+        LoginDTO response = new LoginDTO();
         response.setToken(jwtToken);
 
-        //200 OK response
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/auth/userinfo")
-    public ResponseEntity<?> getUserInfo(Principal user){
-        //call  service in here
-        User userObj=(User) userDetailsService.loadUserByUsername(user.getName());
-        //userDetailsService call to repo
-        UserInfo userInfo=new UserInfo();
-        userInfo.setFirstName(userObj.getFirstName());
-        userInfo.setLastName(userObj.getLastName());
-        userInfo.setRoles(userObj.getAuthorities().toArray());
+    public ResponseEntity<?> getUserInfo(Principal user) {
+        // Fetch user details using the Principal
+        User userObj = (User) userService.loadUserByUsername(user.getName());
 
-        return ResponseEntity.ok(userInfo);
+        // Create and return user info response
+        UserDTO userInfoDto = new UserDTO();
+        userInfoDto.setFirstName(userObj.getFirstName());
+        userInfoDto.setLastName(userObj.getLastName());
+
+        // Convert GrantedAuthority to SimpleGrantedAuthority
+        Collection<SimpleGrantedAuthority> simpleGrantedAuthorities = userObj.getAuthorities().stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
+                .toList();
+
+        userInfoDto.setAuthorities(simpleGrantedAuthorities);
+
+        return ResponseEntity.ok(userInfoDto);
     }
-
 }

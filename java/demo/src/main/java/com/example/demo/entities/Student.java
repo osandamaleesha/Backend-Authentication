@@ -18,13 +18,16 @@ public class Student extends User {
     @Column(name = "MAJOR")
     private String major;
 
-    // Getters and setters...
-    public UUID getId() {
-        return id;
+    public void onCreate() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
+        }
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    // Getters and setters...
+    @Override
+    public UUID getId() {
+        return id != null ? id : super.getId(); // Fallback to User's ID
     }
 
     public String getGrade() {
@@ -41,5 +44,9 @@ public class Student extends User {
 
     public void setMajor(String major) {
         this.major = major;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 }
