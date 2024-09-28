@@ -27,33 +27,32 @@ public class LoginAuthApplication {
     private UserDetailsRepository userDetailsRepository;
 
 
+    public static void main(String[] args) {
+        SpringApplication.run(LoginAuthApplication.class, args);
+        System.out.print("init");
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(LoginAuthApplication.class, args);
-		System.out.print("init");
-	}
-
-//	@PostConstruct
-//  protected void init() {
+//    @PostConstruct
+//    protected void init() {
 //
-//     List<Authority> authorityList=new ArrayList<>();
+//        List<Authority> authorityList = new ArrayList<>();
 //
-//     authorityList.add(createAuthority("ADMIN","Admin role"));
-//     authorityList.add(createAuthority("DOCTOR","Doctor role"));
+//        authorityList.add(createAuthority("ADMIN", "Admin role"));
+//        authorityList.add(createAuthority("DOCTOR", "Doctor role"));
 //
-//     User user=new User();
+//        User user = new User();
 //
-//     user.setUserName("Ushan1");
-//     user.setFirstName("Ushan1");
-//     user.setLastName("Gallage");
+//        user.setUserName("Ushan1");
+//        user.setFirstName("Ushan1");
+//        user.setLastName("Gallage");
 //
-//     user.setPassword(passwordEncoder.encode("123"));
-//     user.setEnabled(true);
-//     user.setAuthorities(authorityList);
+//        user.setPassword(passwordEncoder.encode("123"));
+//        user.setEnabled(true);
+//        user.setAuthorities(authorityList);
 //
-//     userDetailsRepository.save(user);
+//        userDetailsRepository.save(user);
 //
-//  }
+//    }
 //
 //      private Authority createAuthority(String roleCode,String roleDescription) {
 //     Authority authority=new Authority();
@@ -62,5 +61,6 @@ public class LoginAuthApplication {
 //     return authority;
 //
 //  }
+
 
 }

@@ -1,6 +1,6 @@
 package com.example.demo.config;
 
-import com.example.demo.services.UserService;
+import com.example.demo.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,14 +16,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.example.demo.services.UserService;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService; // Change to UserServiceImpl
 
     @Autowired
     private JWTTokenHelper jWTTokenHelper;
@@ -33,17 +31,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        //in memory authentication with role
-        //withUser, password, roles, authority
-//		auth.inMemoryAuthentication()
-//				.withUser("Yashodha")
-//				.password(passwordEncoder().encode("123456789"))
-//				.authorities("ADMIN");
-
+        // This should work if UserServiceImpl is correctly implementing UserDetailsService
         auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
-
     }
-    //for encode password, without -> error
+
+    // For encoding passwords
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -54,23 +46,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-    //http basic authentication
+
+    // Configure HTTP security
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//		all protected after '/**'
-//		antMatchers("/index.html").permitAll()
-//		antMatchers("/admin/**").hasRole("ADMIN")
-//		antMatchers("/index.html").hasAnyRole("ADMIN","MANAGER")
-
-
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint).and()
-                .authorizeRequests((request) -> request.antMatchers(
+        http.sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .and()
+                .authorizeRequests((request) -> request
+                        .antMatchers(
                                 "/api/v1/auth/login",
                                 "/api/v1/login_dashboard",
                                 "/api/v1/test"
-
-
                         )
                         .permitAll()
                         .antMatchers(HttpMethod.OPTIONS, "/**")
@@ -80,15 +70,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(new JWTAuthenticationFilter(userService, jWTTokenHelper),
                         UsernamePasswordAuthenticationFilter.class);
 
-        http
-                .csrf()
-                .disable()
+        http.csrf().disable()
                 .cors()
                 .and()
                 .headers()
                 .frameOptions()
                 .disable();
-
     }
-
 }
