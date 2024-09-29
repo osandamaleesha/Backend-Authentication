@@ -27,6 +27,7 @@ public class UserMapper {
         user.setEmail(userDTO.getEmail());
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
 
         // Use password from AuthenticationDTO and encode it
        // user.setPassword(passwordEncoder.encode(authDTO.getPassword()));
@@ -47,6 +48,7 @@ public class UserMapper {
         userDTO.setEmail(user.getEmail());
         userDTO.setFirstName(user.getFirstName());
         userDTO.setLastName(user.getLastName());
+        userDTO.setPhoneNumber(user.getPhoneNumber());
         return userDTO;
     }
 }

@@ -35,17 +35,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userDetailsRepository.existsByEmail(email);
     }
 
-    @Override
-    public void saveUser(UserDTO userDTO) throws OctopusDAOException {
-
-    }
+//    @Override
+//    public void saveUser(UserDTO userDTO) throws OctopusDAOException {
+//
+//    }
 
     @Override
     @CacheEvict(value = "users", allEntries = true) // Clear cache on save
-    public void saveUser(UserDTO userDTO, AuthenticationDTO authDTO) throws OctopusDAOException {
-        if (isEmailAlreadyUsed(userDTO.getEmail())) {
-            throw OctopusDAOException.customerAlreadyExists();
-        }
+    public void saveUser(UserDTO userDTO) throws OctopusDAOException {
+//        if (isEmailAlreadyUsed(userDTO.getEmail())) {
+//            throw OctopusDAOException.customerAlreadyExists();
+//        }
 
         // Pass both UserDTO and AuthenticationDTO to toEntity
         User newUser = userMapper.toEntity(userDTO);

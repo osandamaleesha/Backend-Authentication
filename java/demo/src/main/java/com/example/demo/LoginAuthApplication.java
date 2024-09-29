@@ -32,35 +32,35 @@ public class LoginAuthApplication {
         System.out.print("init");
     }
 
-//    @PostConstruct
-//    protected void init() {
-//
-//        List<Authority> authorityList = new ArrayList<>();
-//
-//        authorityList.add(createAuthority("ADMIN", "Admin role"));
-//        authorityList.add(createAuthority("DOCTOR", "Doctor role"));
-//
-//        User user = new User();
-//
-//        user.setUserName("Ushan1");
-//        user.setFirstName("Ushan1");
-//        user.setLastName("Gallage");
-//
-//        user.setPassword(passwordEncoder.encode("123"));
-//        user.setEnabled(true);
-//        user.setAuthorities(authorityList);
-//
+    @PostConstruct
+    protected void init() {
+
+        List<Authority> authorityList = new ArrayList<>();
+
+        authorityList.add(createAuthority("ADMIN", "Admin role"));
+        authorityList.add(createAuthority("DOCTOR", "Doctor role"));
+
+        User user = new User();
+
+        user.setUserName("Ushan1");
+        user.setFirstName("Ushan1");
+        user.setLastName("Gallage");
+
+        user.setPassword(passwordEncoder.encode("123"));
+        user.setEnabled(true);
+        user.setAuthorities(authorityList);
+
 //        userDetailsRepository.save(user);
-//
-//    }
-//
-//      private Authority createAuthority(String roleCode,String roleDescription) {
-//     Authority authority=new Authority();
-//     authority.setRoleCode(roleCode);
-//     authority.setRoleDescription(roleDescription);
-//     return authority;
-//
-//  }
+
+    }
+
+     private Authority createAuthority(String roleCode,String roleDescription) {
+     Authority authority=new Authority();
+     authority.setRoleCode(roleCode);
+     authority.setRoleDescription(roleDescription);
+     return authority;
+
+  }
 
 
 }

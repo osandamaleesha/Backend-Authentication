@@ -60,7 +60,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .antMatchers(
                                 "/api/v1/auth/login",
                                 "/api/v1/login_dashboard",
-                                "/api/v1/test"
+                                "/api/v1/register"
                         )
                         .permitAll()
                         .antMatchers(HttpMethod.OPTIONS, "/**")

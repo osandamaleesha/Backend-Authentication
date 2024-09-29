@@ -23,7 +23,6 @@ public class UserController {
     }
 
 
-
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) throws OctopusDAOException {
         Optional<UserDTO> userDTO = userService.getUserById(id);

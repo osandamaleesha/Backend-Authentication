@@ -13,8 +13,8 @@ public interface UserService {
     @CacheEvict(value = "users", allEntries = true) // Clear cache on save
     void saveUser(UserDTO userDTO) throws OctopusDAOException;
 
-    @CacheEvict(value = "users", allEntries = true) // Clear cache on save
-    void saveUser(UserDTO userDTO, AuthenticationDTO authDTO) throws OctopusDAOException;
+//    @CacheEvict(value = "users", allEntries = true) // Clear cache on save
+//    void saveUser(UserDTO userDTO, AuthenticationDTO authDTO) throws OctopusDAOException;
 
     Optional<UserDTO> getUserById(Long id);
     boolean isEmailAlreadyUsed(String email);
